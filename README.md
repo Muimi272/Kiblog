@@ -161,7 +161,9 @@ about-avatar-path: portraits/me.png
 
 ### `config/admin.json`
 
-该文件用于保存管理员用户名和加密后的密码。默认格式如下：
+该文件用于保存管理员用户名和密码。系统兼容两种写法：
+
+推荐写法，使用加密后的密码：
 
 ```json
 {
@@ -170,7 +172,22 @@ about-avatar-path: portraits/me.png
 }
 ```
 
+兼容写法，也可以直接写明文密码：
+
+```json
+{
+  "username": "admin",
+  "password": "123456"
+}
+```
+
 首次运行后如果文件不存在，系统会自动初始化管理员配置。
+
+如果系统启动时检测到 `password` 是明文：
+
+- 会自动将其转换为 `encodedPassword`
+- 会立即回写到 `config/admin.json`
+- 不再继续保留明文字段
 
 ## 数据库
 
@@ -246,7 +263,7 @@ macOS / Linux:
 ./mvnw -q -DskipTests compile
 ```
 
-## 可自定义内容建议
+## 可自定义内容
 
 推荐开放给使用者自行修改的内容包括：
 

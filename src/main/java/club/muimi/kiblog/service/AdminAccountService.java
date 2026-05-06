@@ -28,8 +28,16 @@ public class AdminAccountService {
         File file = new File(adminProperties.getDataFile());
         if (file.exists()) {
             try {
+                boolean migrated = false;
                 synchronized (lock) {
                     currentAdmin = objectMapper.readValue(file, AdminAccount.class);
+                    migrated = normalizeLoadedAdmin(currentAdmin);
+                    if (migrated) {
+                        objectMapper.writeValue(file, currentAdmin);
+                    }
+                }
+                if (migrated) {
+                    log.info("检测到明文管理员密码，已自动迁移为加密存储: {}", file.getAbsolutePath());
                 }
                 log.info("已从 {} 加载管理员配置", file.getAbsolutePath());
             } catch (JacksonException e) {
@@ -61,6 +69,41 @@ public class AdminAccountService {
 
     private boolean isBCryptHash(String password) {
         return password != null && password.matches("^\\$2[aby]\\$\\d{2}\\$.+");
+    }
+
+    private boolean normalizeLoadedAdmin(AdminAccount admin) {
+        if (admin == null) {
+            throw new RuntimeException("管理员配置为空，无法启动");
+        }
+
+        if (admin.getUsername() == null || admin.getUsername().isBlank()) {
+            throw new RuntimeException("管理员用户名不能为空，无法启动");
+        }
+
+        if (admin.hasEncodedPassword()) {
+            if (!isBCryptHash(admin.getEncodedPassword())) {
+                if (admin.hasPlainPassword()) {
+                    admin.updatePassword(admin.getPassword().trim());
+                    return true;
+                }
+
+                admin.updatePassword(admin.getEncodedPassword().trim());
+                return true;
+            }
+
+            if (admin.hasPlainPassword()) {
+                admin.clearPlainPassword();
+                return true;
+            }
+            return false;
+        }
+
+        if (admin.hasPlainPassword()) {
+            admin.updatePassword(admin.getPassword().trim());
+            return true;
+        }
+
+        throw new RuntimeException("管理员配置缺少 password 或 encodedPassword，无法启动");
     }
 
     public boolean authenticate(String username, String rawPassword) {

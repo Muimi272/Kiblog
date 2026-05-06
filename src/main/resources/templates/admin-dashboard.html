@@ -58,6 +58,7 @@
       color: var(--text);
       margin: 0;
       padding: 0;
+      -webkit-text-size-adjust: 100%;
       transition: background-color 0.25s ease, color 0.25s ease;
     }
 
@@ -65,6 +66,7 @@
       max-width: 1400px;
       margin: 0 auto;
       padding: 40px 20px;
+      box-sizing: border-box;
     }
 
     header {
@@ -86,6 +88,8 @@
     .user-info {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
       gap: 20px;
     }
 
@@ -99,6 +103,7 @@
       border: 1px solid transparent;
       border-radius: 999px;
       cursor: pointer;
+      touch-action: manipulation;
       font: inherit;
       font-weight: 600;
       transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
@@ -621,6 +626,106 @@
       font-size: 0.82rem;
       letter-spacing: 0.04em;
     }
+
+    .editor-form-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 15px;
+    }
+
+    .editor-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 960px) {
+      .editor-form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .editor-split {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+
+      .editor-split textarea {
+        min-height: 280px;
+        border-right: none;
+        border-bottom: 1px solid var(--split-border);
+      }
+
+      .preview-pane {
+        min-height: 280px;
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .container {
+        padding: 28px 16px;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+        margin-bottom: 28px;
+      }
+
+      .user-info {
+        width: 100%;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .section-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .article-list {
+        grid-template-columns: 1fr;
+        margin-bottom: 40px;
+      }
+
+      .article-item {
+        padding: 16px;
+      }
+
+      .article-actions {
+        flex-direction: column;
+      }
+
+      .editor-actions {
+        flex-direction: column-reverse;
+        position: sticky;
+        bottom: 0;
+        padding-top: 12px;
+        padding-bottom: calc(6px + env(safe-area-inset-bottom));
+        background: linear-gradient(to top, var(--bg) 72%, rgba(255, 255, 255, 0));
+      }
+
+      .editor-actions button {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .theme-toggle {
+        min-width: 76px;
+      }
+
+      .preview-title {
+        font-size: 1.6rem;
+      }
+
+      .article-info h3 {
+        font-size: 1rem;
+      }
+    }
   </style>
 </head>
 
@@ -648,7 +753,7 @@
       <h2 class="section-title">发布 / 更新文章</h2>
       <form id="editorForm">
         <input type="hidden" id="articleId">
-        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px;">
+        <div class="editor-form-row">
           <input type="text" id="title" placeholder="文章标题" required>
           <input type="text" id="author" placeholder="作者" th:value="${defaultAuthor}">
           <input type="text" id="tags" placeholder="标签 (逗号分隔)">
@@ -661,7 +766,7 @@
           </div>
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 10px;">
+        <div class="editor-actions">
           <button type="button" class="secondary" id="cancelEditBtn"
             style="display: none; padding: 0 24px;">取消编辑</button>
           <button type="submit" id="saveBtn" style="padding: 0 32px;">发布文章</button>
