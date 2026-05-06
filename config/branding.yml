@@ -1,0 +1,12 @@
+kiblog:
+  brand:
+    site-name: Kiblog
+    home-title: 写给长期主义者的技术与生活记录
+    home-subtitle: 从代码、产品和日常观察中挑出值得留存的部分，做成一份可反复翻阅的数字笔记。
+    home-articles-title: 最新文章
+    home-articles-description: 从最近写下的内容开始浏览，看看这段时间我在关注什么。
+    about-name: Kiblog
+    about-subtitle: 记录技术、产品与长期学习过程中的思考。
+    about-description: 这里主要用来整理编程实践、产品体验和日常学习中的零散想法，希望把它们慢慢沉淀成更清晰、也更值得回看的内容。
+    # 本地头像路径相对于 config/assets 目录填写，例如：avatar.jpg 或 portraits/me.png
+    about-avatar-path:

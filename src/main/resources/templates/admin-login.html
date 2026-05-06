@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Kiblog Admin Login</title>
+    <script>
+        (function () {
+            const storedTheme = localStorage.getItem("kiblog_theme");
+            const systemTheme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+            document.documentElement.setAttribute("data-theme", storedTheme || systemTheme);
+        })();
+    </script>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #333333;
+            --muted: #888888;
+            --border: #eeeeee;
+            --primary: #000000;
+            --hover: #f5f5f5;
+            --surface: #ffffff;
+            --surface-muted: #fafafa;
+            --button-text: #ffffff;
+            --success-bg: #f0fff0;
+            --success-text: #2e7d32;
+            --success-border: #d0ffd0;
+            --error-bg: #fff0f0;
+            --error-text: #d32f2f;
+            --error-border: #ffd0d0;
+        }
+        html[data-theme="dark"] {
+            --bg: #0f1115;
+            --text: #e8ecf3;
+            --muted: #99a3b3;
+            --border: #2a313c;
+            --primary: #f5f7fb;
+            --hover: #171c24;
+            --surface: #141922;
+            --surface-muted: #11161e;
+            --button-text: #0f1115;
+            --success-bg: rgba(46, 125, 50, 0.16);
+            --success-text: #9ee3a5;
+            --success-border: rgba(82, 183, 95, 0.35);
+            --error-bg: rgba(211, 47, 47, 0.14);
+            --error-text: #ff9f9f;
+            --error-border: rgba(255, 120, 120, 0.35);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            text-align: center;
+            background: var(--surface);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+        }
+        .login-box h1 {
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        .login-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .login-header h1 {
+            margin: 0;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 42px;
+            padding: 0 18px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 600;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        }
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .btn-secondary:hover {
+            background: var(--hover);
+        }
+        .theme-toggle {
+            min-width: 88px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-sizing: border-box;
+            outline: none;
+            background: var(--surface-muted);
+            color: var(--text);
+        }
+        .form-group input:focus {
+            border-color: var(--primary);
+        }
+        .submit-button {
+            width: 100%;
+            min-height: 42px;
+            padding: 0 18px;
+            background: var(--primary);
+            color: var(--button-text);
+            border: none;
+            border-radius: 999px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+        .submit-button:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        }
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+            font-size: 0.9rem;
+        }
+        .message.error {
+            background: var(--error-bg);
+            color: var(--error-text);
+            border: 1px solid var(--error-border);
+        }
+        .message.success {
+            background: var(--success-bg);
+            color: var(--success-text);
+            border: 1px solid var(--success-border);
+        }
+        .site-footer {
+            margin-top: 20px;
+            color: var(--muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.04em;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="login-header">
+            <h1>后台登录</h1>
+            <button type="button" class="btn btn-secondary theme-toggle" data-theme-toggle><span data-theme-label>深色</span></button>
+        </div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>用户名</label>
+                <input id="username" name="username" type="text" autocomplete="username" value="admin">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input id="password" name="password" type="password" autocomplete="current-password" placeholder="输入密码">
+            </div>
+            <button type="submit" class="submit-button">登录</button>
+        </form>
+        <a href="/">&larr; 返回前台</a>
+        <div class="message" id="message"></div>
+        <div class="site-footer">powered by Kiblog</div>
+    </div>
+
+    <script src="/js/theme.js"></script>
+    <script>
+        const TOKEN_KEY = "kiblog_admin_token";
+        const form = document.getElementById("loginForm");
+        const message = document.getElementById("message");
+        const username = document.getElementById("username");
+        const password = document.getElementById("password");
+
+        function setMessage(text, isError = false) {
+            message.textContent = text;
+            message.className = isError ? "message error" : "message success";
+            message.style.display = text ? "block" : "none";
+        }
+
+        form.addEventListener("submit", async event => {
+            event.preventDefault();
+            setMessage("");
+            try {
+                const response = await fetch("/admin/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        username: username.value.trim(),
+                        password: password.value
+                    })
+                });
+                const payload = await response.json();
+                if (!response.ok || payload.code !== 200 || !payload.data?.token) {
+                    throw new Error(payload.message || "登录失败");
+                }
+                localStorage.setItem(TOKEN_KEY, payload.data.token);
+                setMessage("登录成功，正在跳转...");
+                setTimeout(() => {
+                    window.location.replace("/admin/dashboard");
+                }, 500);
+            } catch (error) {
+                setMessage(error.message || "登录失败", true);
+            }
+        });
+    </script>
+</body>
+</html>
